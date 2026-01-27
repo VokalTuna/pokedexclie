@@ -10,7 +10,7 @@ func commandNextMap(cfg *config) error {
 	if err != nil {
 		return err
 	}
-	cfg.Previous = locationResp.Previous.(string)
+	cfg.Previous = locationResp.Previous
 	cfg.Next = locationResp.Next
 
 	for _, loc := range locationResp.Results {
@@ -27,7 +27,7 @@ func commandPreviousMap(cfg *config) error {
 	if err != nil {
 		return err
 	}
-	cfg.Previous = locationResp.Previous.(string)
+	cfg.Previous = locationResp.Previous
 	cfg.Next = locationResp.Next
 
 	for _, loc := range locationResp.Results {

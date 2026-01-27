@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/vokaltuna/pokedexclie/internal/pokeapi"
+	"github.com/VokalTuna/pokedexclie/internal/pokeapi"
 )
 
 type config struct {
@@ -31,7 +31,7 @@ func startRepl(cfg *config) {
 		if ok {
 			err := command.callback(cfg)
 			if err != nil {
-				fmt.Printf("Trouble: %s\n", err)
+				fmt.Println(err)
 			}
 		} else {
 			fmt.Println("Unknown command")

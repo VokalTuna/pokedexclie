@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/vokaltuna/pokedexclie/internal/pokeapi"
+	"github.com/VokalTuna/pokedexclie/internal/pokeapi"
 )
 
 func main() {
