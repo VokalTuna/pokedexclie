@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/vokaltuna/pokedexclie/internal/pokeapi"
 )
 
 type config struct {
