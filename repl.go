@@ -7,8 +7,18 @@ import (
 	"strings"
 )
 
-func startRepl() {
+type config struct {
+	pokeapiClient pokeapi.Client
+	Next          string
+	Previous      string
+}
+
+func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
+	c := config{
+		Next:     "https://pokeapi.co/api/v2/location-area/",
+		Previous: "null",
+	}
 
 	for true {
 		fmt.Print("Pokedex > ")
@@ -21,7 +31,8 @@ func startRepl() {
 		commandName := words[0]
 		command, ok := commandRegister()[commandName]
 		if ok {
-			if err := command.callback(); err != nil {
+			err := command.callback(&cfg)
+			if err != nil {
 				fmt.Printf("Trouble: %s\n", err)
 			}
 		} else {
@@ -34,7 +45,7 @@ func startRepl() {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
 }
 
 func cleanInput(text string) []string {
@@ -54,6 +65,16 @@ func commandRegister() map[string]cliCommand {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
+		},
+		"map": {
+			name:        "map",
+			description: "Get the next page of locations",
+			callback:    commandNextMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get the previous page of locations",
+			callback:    commandPreviousMap,
 		},
 	}
 	return commands
