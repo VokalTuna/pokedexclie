@@ -11,16 +11,12 @@ import (
 
 type config struct {
 	pokeapiClient pokeapi.Client
-	Next          string
-	Previous      string
+	Next          *string
+	Previous      *string
 }
 
 func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
-	c := config{
-		Next:     "https://pokeapi.co/api/v2/location-area/",
-		Previous: "null",
-	}
 
 	for true {
 		fmt.Print("Pokedex > ")
@@ -33,7 +29,7 @@ func startRepl(cfg *config) {
 		commandName := words[0]
 		command, ok := commandRegister()[commandName]
 		if ok {
-			err := command.callback(&cfg)
+			err := command.callback(cfg)
 			if err != nil {
 				fmt.Printf("Trouble: %s\n", err)
 			}
