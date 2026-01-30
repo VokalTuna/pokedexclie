@@ -12,11 +12,12 @@ func (c *Client) ListLocations(pageURL *string) (respShallowLocations, error) {
 		url = *pageURL
 	}
 
-	byteBody, ok := c.pokeCache.Get(*pageURL)
-	locationsResp := respShallowLocations{}
-
-	if ok {
-		json.Unmarshal(byteBody, &locationsResp)
+	if val, ok := c.cache.Get(url); ok {
+		locationsResp := respShallowLocations{}
+		err := json.Unmarshal(val, &locationsResp)
+		if err != nil {
+			return respShallowLocations{}, nil
+		}
 		return locationsResp, nil
 	}
 
@@ -30,13 +31,16 @@ func (c *Client) ListLocations(pageURL *string) (respShallowLocations, error) {
 	}
 	defer resp.Body.Close()
 
-	byteBody, err = io.ReadAll(resp.Body)
-	c.pokeCache.Add(*pageURL, byteBody)
-
+	dat, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return respShallowLocations{}, err
+	}
+	locationsResp := respShallowLocations{}
+	err = json.Unmarshal(dat, &locationsResp)
 	if err != nil {
 		return respShallowLocations{}, err
 	}
 
-	json.Unmarshal(byteBody, &locationsResp)
+	c.cache.Add(url, dat)
 	return locationsResp, nil
 }
