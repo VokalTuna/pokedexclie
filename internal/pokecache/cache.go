@@ -15,6 +15,15 @@ type cacheEntry struct {
 	val       []byte
 }
 
+func NewCache(timeout time.Duration) *Cache {
+	cache := Cache{
+		stored: map[string]cacheEntry{},
+		mu:     sync.Mutex{},
+	}
+	go cache.reapLoop(timeout)
+	return &cache
+}
+
 func (c *Cache) Get(key string) ([]byte, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
