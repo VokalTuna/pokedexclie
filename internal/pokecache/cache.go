@@ -15,14 +15,14 @@ type cacheEntry struct {
 	val       []byte
 }
 
-func (c Cache) Get(key string) ([]byte, bool) {
+func (c *Cache) Get(key string) ([]byte, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	entry, ok := c.stored[key]
 	return entry.val, ok
 }
 
-func (c Cache) Add(key string, value []byte) {
+func (c *Cache) Add(key string, value []byte) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.stored[key] = cacheEntry{
@@ -31,16 +31,14 @@ func (c Cache) Add(key string, value []byte) {
 	}
 }
 
-func (c Cache) reapLoop(interval time.Duration) {
+func (c *Cache) reapLoop(interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	for range ticker.C {
 		c.mu.Lock()
 		for key, entry := range c.stored {
-			if (-entry.createdAt) > interval {
-				// Take current time, subtract with the time created, and see if the
-				// time has passed the allowed interval
+			if time.Since(entry.createdAt) > interval {
 				delete(c.stored, key)
 			}
 		}

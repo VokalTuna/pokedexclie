@@ -23,6 +23,8 @@ func commandPreviousMap(cfg *config) error {
 	if cfg.Previous == nil {
 		return errors.New("you're on the first page")
 	}
+	// See if cfg.Previous is still in cache
+	// Else call api client.
 	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.Previous)
 	if err != nil {
 		return err
