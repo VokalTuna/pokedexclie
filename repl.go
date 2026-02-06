@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 
@@ -11,6 +12,8 @@ import (
 
 type config struct {
 	pokeapiClient pokeapi.Client
+	randomSource  *rand.Rand
+	caughtPokemon map[string]pokeapi.Pokemon
 	Next          *string
 	Previous      *string
 }
@@ -27,9 +30,13 @@ func startRepl(cfg *config) {
 		}
 
 		commandName := words[0]
+		args := []string{}
+		if len(words) > 1 {
+			args = words[1:]
+		}
 		command, ok := commandRegister()[commandName]
 		if ok {
-			err := command.callback(cfg)
+			err := command.callback(cfg, args...)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -43,7 +50,7 @@ func startRepl(cfg *config) {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 func cleanInput(text string) []string {
@@ -73,6 +80,16 @@ func commandRegister() map[string]cliCommand {
 			name:        "mapb",
 			description: "Get the previous page of locations",
 			callback:    commandPreviousMap,
+		},
+		"explore": {
+			name:        "explore <location name>",
+			description: "Get a list of pokemon encounters in an area",
+			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch <pokemon name>",
+			description: "Try to catch the given pokemon",
+			callback:    commandCatch,
 		},
 	}
 	return commands
