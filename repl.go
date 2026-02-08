@@ -96,6 +96,11 @@ func commandRegister() map[string]cliCommand {
 			description: "Inspect caucht pokemon",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "View all caught pokemon.",
+			callback:    commandPokedex,
+		},
 	}
 	return commands
 }
